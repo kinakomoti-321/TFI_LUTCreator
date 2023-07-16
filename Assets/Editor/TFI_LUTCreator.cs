@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-public class LUTCaptureEditor : EditorWindow
+public class TFI_LUTCreator : EditorWindow
 {
     private Camera captureCamera;
     private GameObject cameraObject;
@@ -58,8 +57,8 @@ public class LUTCaptureEditor : EditorWindow
     [MenuItem("Window/LUT Capture")]
     private static void ShowWindow()
     {
-        LUTCaptureEditor window = GetWindow<LUTCaptureEditor>();
-        window.titleContent = new GUIContent("LUT Capture");
+        TFI_LUTCreator window = GetWindow<TFI_LUTCreator>();
+        window.titleContent = new GUIContent("TFI_LUTCreator");
         window.Show();
 
     }
@@ -119,23 +118,17 @@ public class LUTCaptureEditor : EditorWindow
     }
 
     private void OnDisable()
-    {
-        if(captureCamera.name == "LUTCaptureCamera")
-        {
-            DestroyImmediate(captureCamera.gameObject);
-        }
-        if(previewObject.name == "LUTPreviewObject")
-        {
-            DestroyImmediate(previewObject);
-        }
-        if(_previewCamera.name == "LUTPreviewCamera")
-        {
-            DestroyImmediate(_previewCamera.gameObject);
-        }
-        if(planeObject.name == "LUTPlane"){
-            DestroyImmediate(planeObject);
-        }
+    {   
+        var findTFIcapture = GameObject.Find("TFI_LUTCaptureCamera");
+        var findTFIpreview = GameObject.Find("TFI_LUTPreviewCamera");
+        var findTFIplane = GameObject.Find("TFI_LUTPlane");
+        var findTFIpreviewObject = GameObject.Find("TFI_LUTPreviewObject");
 
+        DestroyImmediate(findTFIcapture);
+        DestroyImmediate(findTFIplane);
+        DestroyImmediate(findTFIpreview);
+        DestroyImmediate(findTFIpreviewObject);
+        
         DestroyImmediate(captureMaterial);
         DestroyImmediate(previewMaterial);
         DestroyImmediate(lutTexture);
@@ -146,7 +139,7 @@ public class LUTCaptureEditor : EditorWindow
     private void OnGUI()
     {
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-        captureCamera = EditorGUILayout.ObjectField("Capture Camera", captureCamera, typeof(Camera), true) as Camera;
+        captureCamera = EditorGUILayout.ObjectField("LUT Capture Camera", captureCamera, typeof(Camera), true) as Camera;
         planeObject = EditorGUILayout.ObjectField("LUT Plane", planeObject, typeof(GameObject), true) as GameObject;
         captureMaterial = EditorGUILayout.ObjectField("Capture Material", captureMaterial, typeof(Material), true) as Material;
 
@@ -420,12 +413,12 @@ public class LUTCaptureEditor : EditorWindow
 
     private void CreateLUTCaptureObjects()
     {
-        var findcamera = GameObject.Find("LUTCaptureCamera");
-        var findplane = GameObject.Find("LUTPlane");
+        var findcamera = GameObject.Find("TFI_LUTCaptureCamera");
+        var findplane = GameObject.Find("TFI_LUTPlane");
 
         if (findcamera == null)
         {
-            GameObject captureCameraObj = new GameObject("LUTCaptureCamera");
+            GameObject captureCameraObj = new GameObject("TFI_LUTCaptureCamera");
             cameraObject = captureCameraObj;
             captureCamera = captureCameraObj.AddComponent<Camera>();
         }
@@ -447,7 +440,7 @@ public class LUTCaptureEditor : EditorWindow
         }
 
         int LUTlayer = 8;
-        planeObject.name = "LUTPlane";
+        planeObject.name = "TFI_LUTPlane";
         planeObject.GetComponent<MeshRenderer>().receiveShadows = false;
         planeObject.GetComponent<MeshRenderer>().sharedMaterial = captureMaterial;
         planeObject.layer = LUTlayer;
@@ -467,7 +460,7 @@ public class LUTCaptureEditor : EditorWindow
             previewMaterial = new Material(Shader.Find("TFI_LUTCreator/LUT_Viewer"));
         }
 
-        var findPreviewObj = GameObject.Find("LUTPreviewObject");
+        var findPreviewObj = GameObject.Find("TFI_LUTPreviewObject");
         if(findPreviewObj == null){
             previewObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         }
@@ -475,15 +468,15 @@ public class LUTCaptureEditor : EditorWindow
             previewObject = findPreviewObj;
         }
 
-        previewObject.name = "LUTPreviewObject";
+        previewObject.name = "TFI_LUTPreviewObject";
         previewObject.GetComponent<MeshRenderer>().receiveShadows = false;
         previewObject.GetComponent<MeshRenderer>().sharedMaterial = previewMaterial;
         previewObject.transform.position = new Vector3(8, 0, 0);
         previewObject.transform.localScale = new Vector3(4,4,4);
 
-        var findPreviewCamera = GameObject.Find("LUTPreviewCamera");
+        var findPreviewCamera = GameObject.Find("TFI_LUTPreviewCamera");
         if(findPreviewCamera == null){
-            _previewCameraObject = new GameObject("LUTPreviewCamera");
+            _previewCameraObject = new GameObject("TFI_LUTPreviewCamera");
             _previewCamera = _previewCameraObject.AddComponent<Camera>();
         }
         else{
