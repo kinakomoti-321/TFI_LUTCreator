@@ -54,7 +54,7 @@ public class TFI_LUTCreator : EditorWindow
     private int _selectedOption = 0;
     private string[] _options = new string[] {"Dielectric IOR","Color Control Metallic CIRO","Direct control CIOR"};
 
-    [MenuItem("Window/LUT Capture")]
+    [MenuItem("Window/TFI_LUTCreator")]
     private static void ShowWindow()
     {
         TFI_LUTCreator window = GetWindow<TFI_LUTCreator>();
@@ -139,9 +139,9 @@ public class TFI_LUTCreator : EditorWindow
     private void OnGUI()
     {
         _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
-        _captureCamera = EditorGUILayout.ObjectField("LUT Capture Camera", _captureCamera, typeof(Camera), true) as Camera;
-        _lutPlaneObject = EditorGUILayout.ObjectField("LUT Plane", _lutPlaneObject, typeof(GameObject), true) as GameObject;
-        _lutCaptureMaterial = EditorGUILayout.ObjectField("Capture Material", _lutCaptureMaterial, typeof(Material), true) as Material;
+        // _captureCamera = EditorGUILayout.ObjectField("LUT Capture Camera", _captureCamera, typeof(Camera), true) as Camera;
+        // _lutPlaneObject = EditorGUILayout.ObjectField("LUT Plane", _lutPlaneObject, typeof(GameObject), true) as GameObject;
+        // _lutCaptureMaterial = EditorGUILayout.ObjectField("Capture Material", _lutCaptureMaterial, typeof(Material), true) as Material;
 
 
         GUILayout.Space(10);
@@ -175,9 +175,9 @@ public class TFI_LUTCreator : EditorWindow
 
         _foldPreview = EditorGUILayout.Foldout(_foldPreview,"Preview Setting");
         if(_foldPreview){
-            _previewObject = EditorGUILayout.ObjectField("LUT Preview Object", _previewObject, typeof(GameObject), true) as GameObject;
-            _previewMaterial = EditorGUILayout.ObjectField("LUT Preview Material", _previewMaterial, typeof(Material), true) as Material;
-            _previewCamera = EditorGUILayout.ObjectField("Preview Camera", _previewCamera, typeof(Camera), true) as Camera;
+            // _previewObject = EditorGUILayout.ObjectField("LUT Preview Object", _previewObject, typeof(GameObject), true) as GameObject;
+            // _previewMaterial = EditorGUILayout.ObjectField("LUT Preview Material", _previewMaterial, typeof(Material), true) as Material;
+            // _previewCamera = EditorGUILayout.ObjectField("Preview Camera", _previewCamera, typeof(Camera), true) as Camera;
             _previewLayerThickness = EditorGUILayout.FloatField("Layer Thickness",_previewLayerThickness);
         }
 
