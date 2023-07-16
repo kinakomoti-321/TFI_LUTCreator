@@ -2,20 +2,20 @@ using UnityEditor;
 using UnityEngine;
 public class TFI_LUTCreator : EditorWindow
 {
-    private Camera captureCamera;
-    private GameObject cameraObject;
-    private GameObject planeObject;
-    private Material captureMaterial;
-    private RenderTexture renderTexture;
-    private Texture2D lutTexture;
-    private GameObject previewObject;
-    private Material previewMaterial;
+    private Camera _captureCamera;
+    private GameObject _cameraObject;
+    private GameObject _lutPlaneObject;
+    private Material _lutCaptureMaterial;
+    private RenderTexture _lutRenderTexture;
+    private Texture2D _lutTexture;
+    private GameObject _previewObject;
+    private Material _previewMaterial;
 
     //Window Scroll
-    private Vector2 scrollPos;
+    private Vector2 _scrollPos;
 
     //Texture Parameters
-    private int lutSize = 1024;
+    private int _lutTextureSize = 1024;
     private int _textureSizeOp = 5;
     private string[] _textureSizeOptions = new string[] {"32","64","128","256","512","1024","2048","4096"};
 
@@ -42,9 +42,9 @@ public class TFI_LUTCreator : EditorWindow
     private bool _foldPreview = false;
 
     //IOR Example
-    private string[] objectNames ;
-    private Vector3[] objectIORs;
-    private Vector3[] objectCoefficients;
+    private string[] _exampleMaterialNames ;
+    private Vector3[] _exampleMaterialIOR;
+    private Vector3[] _exampleMaterialCoefficients;
 
     //Color
     private Color _bottomLayerBaseColor = Color.white;
@@ -65,7 +65,7 @@ public class TFI_LUTCreator : EditorWindow
 
     private void OnEnable()
     {
-        objectIORs = new Vector3[]{ 
+        _exampleMaterialIOR = new Vector3[]{ 
             new Vector3(1.0f,1.0f,1.0f),
             new Vector3(1.46f,1.46f,1.46f),
             new Vector3(1.33f,1.33f,1.33f),
@@ -81,7 +81,7 @@ public class TFI_LUTCreator : EditorWindow
             new Vector3(0.13f,0.44f,1.43f)
         };
 
-        objectCoefficients =  new Vector3[]{
+        _exampleMaterialCoefficients =  new Vector3[]{
             new Vector3(0.0f,0.0f,0.0f),
             new Vector3(0.0f,0.0f,0.0f),
             new Vector3(0.0f,0.0f,0.0f),
@@ -97,7 +97,7 @@ public class TFI_LUTCreator : EditorWindow
             new Vector3(4.06f,2.41f,1.94f)
         };
         
-        objectNames = new string[]{
+        _exampleMaterialNames = new string[]{
             "大気(空気)",
             "ガラス(SiO2)", 
             "水(H2O)",
@@ -122,26 +122,26 @@ public class TFI_LUTCreator : EditorWindow
         var findTFIcapture = GameObject.Find("TFI_LUTCaptureCamera");
         var findTFIpreview = GameObject.Find("TFI_LUTPreviewCamera");
         var findTFIplane = GameObject.Find("TFI_LUTPlane");
-        var findTFIpreviewObject = GameObject.Find("TFI_LUTPreviewObject");
+        var findTFI_previewObject = GameObject.Find("TFI_LUTPreviewObject");
 
         DestroyImmediate(findTFIcapture);
         DestroyImmediate(findTFIplane);
         DestroyImmediate(findTFIpreview);
-        DestroyImmediate(findTFIpreviewObject);
+        DestroyImmediate(findTFI_previewObject);
         
-        DestroyImmediate(captureMaterial);
-        DestroyImmediate(previewMaterial);
-        DestroyImmediate(lutTexture);
-        DestroyImmediate(renderTexture);
+        DestroyImmediate(_lutCaptureMaterial);
+        DestroyImmediate(_previewMaterial);
+        DestroyImmediate(_lutTexture);
+        DestroyImmediate(_lutRenderTexture);
         DestroyImmediate(_previewRenderTexture);
         DestroyImmediate(_previewTexture);
     }
     private void OnGUI()
     {
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-        captureCamera = EditorGUILayout.ObjectField("LUT Capture Camera", captureCamera, typeof(Camera), true) as Camera;
-        planeObject = EditorGUILayout.ObjectField("LUT Plane", planeObject, typeof(GameObject), true) as GameObject;
-        captureMaterial = EditorGUILayout.ObjectField("Capture Material", captureMaterial, typeof(Material), true) as Material;
+        _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
+        _captureCamera = EditorGUILayout.ObjectField("LUT Capture Camera", _captureCamera, typeof(Camera), true) as Camera;
+        _lutPlaneObject = EditorGUILayout.ObjectField("LUT Plane", _lutPlaneObject, typeof(GameObject), true) as GameObject;
+        _lutCaptureMaterial = EditorGUILayout.ObjectField("Capture Material", _lutCaptureMaterial, typeof(Material), true) as Material;
 
 
         GUILayout.Space(10);
@@ -153,7 +153,7 @@ public class TFI_LUTCreator : EditorWindow
             }
             if (GUILayout.Button("Capture LUT",GUILayout.Height(100),GUILayout.Width(100)))
             {
-                if (captureCamera != null && planeObject != null && captureMaterial != null)
+                if (_captureCamera != null && _lutPlaneObject != null && _lutCaptureMaterial != null)
                 {
                     CaptureLUT();
                 }
@@ -168,15 +168,15 @@ public class TFI_LUTCreator : EditorWindow
         GUILayout.Space(20);
 
         Rect rect = GUILayoutUtility.GetLastRect();
-        EditorGUI.DrawPreviewTexture(new Rect(50,rect.y + rect.height + 10, 256, 256), lutTexture);        
+        EditorGUI.DrawPreviewTexture(new Rect(50,rect.y + rect.height + 10, 256, 256), _lutTexture);        
         EditorGUI.DrawPreviewTexture(new Rect(70 + 256,rect.y + rect.height + 10, 256, 256), _previewTexture);        
 
         GUILayout.Space(256 + 30);
 
         _foldPreview = EditorGUILayout.Foldout(_foldPreview,"Preview Setting");
         if(_foldPreview){
-            previewObject = EditorGUILayout.ObjectField("LUT Preview Object", previewObject, typeof(GameObject), true) as GameObject;
-            previewMaterial = EditorGUILayout.ObjectField("LUT Preview Material", previewMaterial, typeof(Material), true) as Material;
+            _previewObject = EditorGUILayout.ObjectField("LUT Preview Object", _previewObject, typeof(GameObject), true) as GameObject;
+            _previewMaterial = EditorGUILayout.ObjectField("LUT Preview Material", _previewMaterial, typeof(Material), true) as Material;
             _previewCamera = EditorGUILayout.ObjectField("Preview Camera", _previewCamera, typeof(Camera), true) as Camera;
             _previewLayerThickness = EditorGUILayout.FloatField("Layer Thickness",_previewLayerThickness);
         }
@@ -189,28 +189,28 @@ public class TFI_LUTCreator : EditorWindow
             _textureSizeOp = EditorGUILayout.Popup("Texture Size", _textureSizeOp, _textureSizeOptions); 
             switch(_textureSizeOp){
                 case 0:
-                    lutSize = 32;
+                    _lutTextureSize = 32;
                     break;
                 case 1:
-                    lutSize = 64;
+                    _lutTextureSize = 64;
                     break;
                 case 2:
-                    lutSize = 128;
+                    _lutTextureSize = 128;
                     break;
                 case 3:
-                    lutSize = 256;
+                    _lutTextureSize = 256;
                     break;
                 case 4:
-                    lutSize = 512;
+                    _lutTextureSize = 512;
                     break;
                 case 5:
-                    lutSize = 1024;
+                    _lutTextureSize = 1024;
                     break;
                 case 6:
-                    lutSize = 2048;
+                    _lutTextureSize = 2048;
                     break;
                 case 7:
-                    lutSize = 4096;
+                    _lutTextureSize = 4096;
                     break;
             }
 
@@ -269,9 +269,9 @@ public class TFI_LUTCreator : EditorWindow
 
                 DrawTableHeader();
 
-                for (int i = 0; i < objectNames.Length; i++)
+                for (int i = 0; i < _exampleMaterialNames.Length; i++)
                 {
-                    DrawTableRow(objectNames[i], objectIORs[i], objectCoefficients[i]); // テーブルの行を描画
+                    DrawTableRow(_exampleMaterialNames[i], _exampleMaterialIOR[i], _exampleMaterialCoefficients[i]); // テーブルの行を描画
                 }
             }
             
@@ -284,28 +284,28 @@ public class TFI_LUTCreator : EditorWindow
         GUILayout.Space(20);
         EditorGUILayout.EndScrollView();
 
-        if(captureMaterial != null){
+        if(_lutCaptureMaterial != null){
             SetMaterialParameters();
         }
-        if(previewMaterial != null){
+        if(_previewMaterial != null){
             SetPreviewMaterialParameters();
         }
         
         if(_previewCamera != null){
             PreviewRender();
         }
-        if(captureCamera != null){
+        if(_captureCamera != null){
             RenderPreviewLUT();
         }
     }
     
     private void setTextureResolution(int texSize){
-        renderTexture = new RenderTexture(texSize,texSize,0,RenderTextureFormat.ARGB32); 
-        renderTexture.filterMode = FilterMode.Bilinear;
-        renderTexture.Create();
-        lutTexture = new Texture2D(texSize,texSize,TextureFormat.ARGB32,false);
-        lutTexture.filterMode = FilterMode.Bilinear;
-        lutTexture.wrapMode = TextureWrapMode.Clamp;
+        _lutRenderTexture = new RenderTexture(texSize,texSize,0,RenderTextureFormat.ARGB32); 
+        _lutRenderTexture.filterMode = FilterMode.Bilinear;
+        _lutRenderTexture.Create();
+        _lutTexture = new Texture2D(texSize,texSize,TextureFormat.ARGB32,false);
+        _lutTexture.filterMode = FilterMode.Bilinear;
+        _lutTexture.wrapMode = TextureWrapMode.Clamp;
 
         //Debug.Log("Texture Resolution Changed to " + texSize.ToString() + "x" + texSize.ToString());
     }
@@ -359,26 +359,26 @@ public class TFI_LUTCreator : EditorWindow
     } 
 
     private void RenderPreviewLUT(){
-        RenderTexture.active = renderTexture;
-        captureCamera.targetTexture = renderTexture;
+        RenderTexture.active = _lutRenderTexture;
+        _captureCamera.targetTexture = _lutRenderTexture;
 
-        captureCamera.Render();
+        _captureCamera.Render();
 
-        lutTexture.ReadPixels(new Rect(0, 0, lutSize, lutSize), 0, 0);
-        lutTexture.Apply();
+        _lutTexture.ReadPixels(new Rect(0, 0, _lutTextureSize, _lutTextureSize), 0, 0);
+        _lutTexture.Apply();
 
         RenderTexture.active = null;
 
     }
     private void RenderLUT(){
-        setTextureResolution(lutSize);
-        RenderTexture.active = renderTexture;
-        captureCamera.targetTexture = renderTexture;
+        setTextureResolution(_lutTextureSize);
+        RenderTexture.active = _lutRenderTexture;
+        _captureCamera.targetTexture = _lutRenderTexture;
 
-        captureCamera.Render();
+        _captureCamera.Render();
 
-        lutTexture.ReadPixels(new Rect(0, 0, lutSize, lutSize), 0, 0);
-        lutTexture.Apply();
+        _lutTexture.ReadPixels(new Rect(0, 0, _lutTextureSize, _lutTextureSize), 0, 0);
+        _lutTexture.Apply();
 
         RenderTexture.active = null;
     }
@@ -399,11 +399,11 @@ public class TFI_LUTCreator : EditorWindow
         if (string.IsNullOrEmpty(filePath))
             return;
 
-        byte[] bytes = lutTexture.EncodeToPNG();
+        byte[] bytes = _lutTexture.EncodeToPNG();
         System.IO.File.WriteAllBytes(filePath, bytes);
         AssetDatabase.Refresh();
 
-        Debug.Log("Texture Size: " + lutTexture.width.ToString() + "x" + lutTexture.height.ToString());
+        Debug.Log("Texture Size: " + _lutTexture.width.ToString() + "x" + _lutTexture.height.ToString());
         Debug.Log("MiddleLapyerIOR: " + _middleLayerIOR.ToString());
         Debug.Log("MiddleLayerThickness: " + _middleLayerMinimamThickness.ToString() + " ~ " + _middleLayerMaximamThickness.ToString());
         Debug.Log("BottomLayerIOR: " + _bottomLayerIOR.ToString());
@@ -418,61 +418,61 @@ public class TFI_LUTCreator : EditorWindow
 
         if (findcamera == null)
         {
-            GameObject captureCameraObj = new GameObject("TFI_LUTCaptureCamera");
-            cameraObject = captureCameraObj;
-            captureCamera = captureCameraObj.AddComponent<Camera>();
+            GameObject _captureCameraObj = new GameObject("TFI_LUTCaptureCamera");
+            _cameraObject = _captureCameraObj;
+            _captureCamera = _captureCameraObj.AddComponent<Camera>();
         }
         else{
-            cameraObject = findcamera;
-            captureCamera = findcamera.GetComponent<Camera>();
+            _cameraObject = findcamera;
+            _captureCamera = findcamera.GetComponent<Camera>();
         }
 
         if(findplane == null){
             GameObject planeObj = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            planeObject = planeObj;
+            _lutPlaneObject = planeObj;
         }
         else{
-            planeObject = findplane;
+            _lutPlaneObject = findplane;
         }
 
-        if(captureMaterial == null){
-            captureMaterial = new Material(Shader.Find("TFI_LUTCreator/InterferenceLUT"));
+        if(_lutCaptureMaterial == null){
+            _lutCaptureMaterial = new Material(Shader.Find("TFI_LUTCreator/InterferenceLUT"));
         }
 
         int LUTlayer = 8;
-        planeObject.name = "TFI_LUTPlane";
-        planeObject.GetComponent<MeshRenderer>().receiveShadows = false;
-        planeObject.GetComponent<MeshRenderer>().sharedMaterial = captureMaterial;
-        planeObject.layer = LUTlayer;
+        _lutPlaneObject.name = "TFI_LUTPlane";
+        _lutPlaneObject.GetComponent<MeshRenderer>().receiveShadows = false;
+        _lutPlaneObject.GetComponent<MeshRenderer>().sharedMaterial = _lutCaptureMaterial;
+        _lutPlaneObject.layer = LUTlayer;
 
-        planeObject.transform.position = new Vector3(0, 0, 0);
-        planeObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-        planeObject.transform.localScale = new Vector3(1,1,1);
+        _lutPlaneObject.transform.position = new Vector3(0, 0, 0);
+        _lutPlaneObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+        _lutPlaneObject.transform.localScale = new Vector3(1,1,1);
 
-        cameraObject.transform.position = new Vector3(0, 1, 0);
-        cameraObject.transform.rotation = Quaternion.Euler(90,180, 0);
-        cameraObject.transform.localScale = new Vector3(1,1,1);
+        _cameraObject.transform.position = new Vector3(0, 1, 0);
+        _cameraObject.transform.rotation = Quaternion.Euler(90,180, 0);
+        _cameraObject.transform.localScale = new Vector3(1,1,1);
 
-        captureCamera.orthographic = true;
-        captureCamera.cullingMask = 1 << LUTlayer;
+        _captureCamera.orthographic = true;
+        _captureCamera.cullingMask = 1 << LUTlayer;
 
-        if(previewMaterial == null){
-            previewMaterial = new Material(Shader.Find("TFI_LUTCreator/LUT_Viewer"));
+        if(_previewMaterial == null){
+            _previewMaterial = new Material(Shader.Find("TFI_LUTCreator/LUT_Viewer"));
         }
 
         var findPreviewObj = GameObject.Find("TFI_LUTPreviewObject");
         if(findPreviewObj == null){
-            previewObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _previewObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         }
         else{
-            previewObject = findPreviewObj;
+            _previewObject = findPreviewObj;
         }
 
-        previewObject.name = "TFI_LUTPreviewObject";
-        previewObject.GetComponent<MeshRenderer>().receiveShadows = false;
-        previewObject.GetComponent<MeshRenderer>().sharedMaterial = previewMaterial;
-        previewObject.transform.position = new Vector3(8, 0, 0);
-        previewObject.transform.localScale = new Vector3(4,4,4);
+        _previewObject.name = "TFI_LUTPreviewObject";
+        _previewObject.GetComponent<MeshRenderer>().receiveShadows = false;
+        _previewObject.GetComponent<MeshRenderer>().sharedMaterial = _previewMaterial;
+        _previewObject.transform.position = new Vector3(8, 0, 0);
+        _previewObject.transform.localScale = new Vector3(4,4,4);
 
         var findPreviewCamera = GameObject.Find("TFI_LUTPreviewCamera");
         if(findPreviewCamera == null){
@@ -500,21 +500,21 @@ public class TFI_LUTCreator : EditorWindow
     }
 
     private void SetMaterialParameters(){
-        captureMaterial.SetFloat("_TopLayerIOR",_topLayerIOR);
-        captureMaterial.SetFloat("_MiddleLayerIOR",_middleLayerIOR);
-        captureMaterial.SetFloat("_MiddleLayerMinimamThickness",_middleLayerMinimamThickness);
-        captureMaterial.SetFloat("_MiddleLayerMaximamThickness",_middleLayerMaximamThickness);
-        captureMaterial.SetVector("_BottomLayerIOR",_bottomLayerIOR);
-        captureMaterial.SetVector("_BottomLayerKappa",_bottomLayerKappa);
-        captureMaterial.SetVector("_BottomLayerBaseColor",_bottomLayerBaseColor);
-        captureMaterial.SetVector("_BottomLayerEdgeTint",_bottomLayerEdgeTint);
+        _lutCaptureMaterial.SetFloat("_TopLayerIOR",_topLayerIOR);
+        _lutCaptureMaterial.SetFloat("_MiddleLayerIOR",_middleLayerIOR);
+        _lutCaptureMaterial.SetFloat("_MiddleLayerMinimamThickness",_middleLayerMinimamThickness);
+        _lutCaptureMaterial.SetFloat("_MiddleLayerMaximamThickness",_middleLayerMaximamThickness);
+        _lutCaptureMaterial.SetVector("_BottomLayerIOR",_bottomLayerIOR);
+        _lutCaptureMaterial.SetVector("_BottomLayerKappa",_bottomLayerKappa);
+        _lutCaptureMaterial.SetVector("_BottomLayerBaseColor",_bottomLayerBaseColor);
+        _lutCaptureMaterial.SetVector("_BottomLayerEdgeTint",_bottomLayerEdgeTint);
     }
 
     private void SetPreviewMaterialParameters(){
-        previewMaterial.SetFloat("_MiddleLayerMinimamThickness",_middleLayerMinimamThickness);
-        previewMaterial.SetFloat("_MiddleLayerMaximamThickness",_middleLayerMaximamThickness);
-        previewMaterial.SetFloat("_MiddleLayerThickness",_previewLayerThickness);
-        previewMaterial.SetTexture("_LUT",lutTexture);
+        _previewMaterial.SetFloat("_MiddleLayerMinimamThickness",_middleLayerMinimamThickness);
+        _previewMaterial.SetFloat("_MiddleLayerMaximamThickness",_middleLayerMaximamThickness);
+        _previewMaterial.SetFloat("_MiddleLayerThickness",_previewLayerThickness);
+        _previewMaterial.SetTexture("_LUT",_lutTexture);
     }
     
     static private float n_min(float r){
