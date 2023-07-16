@@ -43,9 +43,29 @@ LUTは薄膜の厚み(Thickness)と入射角のコサイン(cosθ)をそれぞ�
         - Direct control CIOR : 直接、複素屈折率の設定を行う
             - Bottom Layer IOR : 複素屈折率の実部(RGB)
             - Bottom Layer Exitincion Coffiecient : 複素屈折率の虚部(RGB)
-            
+
 ## Example LUT 
+Top Layer IOR : 1.0
+Middle Layer IOR : 1.33
+Bottom Layer IOR : (1.0,1.0,1.0)
+Bottom Layer Kappa : (0.0,0.0,0.0)
+Thickness : 0 ~ 1000
 ![LUT Example](./Images/LUT_example.png "test")
+
+Top Layer IOR : 1.0
+Middle Layer IOR : 3.01
+Bottom Layer IOR : (9.93,9.93,9.93)
+Bottom Layer Kappa : (7.97,7.97,7.97)
+Thickness : 0 ~ 100
+![LUT Example](./Images/LUT_example1.png)
+
+Top Layer IOR : 1.0
+Middle Layer IOR : 1.33
+Bottom Layer IOR : (8.58,11.6,4.66)
+Bottom Layer Kappa : (5.09,8.50,8.48)
+Thickness : 0 ~ 1000
+![LUT Example](./Images/LUT_example2.png)
+
 
 ## Reference
 - A Practical Extension to Microfacet Theory for the Modeling of Varying Iridescence
