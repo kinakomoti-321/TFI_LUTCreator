@@ -3,6 +3,8 @@ A Practical Extension to Microfacet Theory for the Modeling of Varying Iridescen
 
 LUTは薄膜の厚み(Thickness)と入射角のコサイン(cosθ)をそれぞれ縦横としたPNG画像として出力されます。
 
+![LUT_sample](./Images/LUT_explanation.png)
+
 ## 導入方法
 1. ReleaseよりUnityPackageをダウンロード
 2. UnityPackageをプロジェクトにimport
@@ -41,7 +43,7 @@ LUTは薄膜の厚み(Thickness)と入射角のコサイン(cosθ)をそれぞ�
         - Direct control CIOR : 直接、複素屈折率の設定を行う
             - Bottom Layer IOR : 複素屈折率の実部(RGB)
             - Bottom Layer Exitincion Coffiecient : 複素屈折率の虚部(RGB)
-
+![LUT Layer](./Images/Layer.png)
 ## Example LUT 
 ![LUT Example](./Images/LUT_example.png "test")
 
