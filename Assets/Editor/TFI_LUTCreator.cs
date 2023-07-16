@@ -54,6 +54,9 @@ public class TFI_LUTCreator : EditorWindow
     private int _selectedOption = 0;
     private string[] _options = new string[] {"Dielectric IOR","Color Control Metallic CIRO","Direct control CIOR"};
 
+    //Figure
+    private Texture2D _layerFigure;
+
     [MenuItem("Window/TFI_LUTCreator")]
     private static void ShowWindow()
     {
@@ -115,6 +118,17 @@ public class TFI_LUTCreator : EditorWindow
         };
         setTextureResolution(256);
         setPreviewTexture();
+        _layerFigure = LoadPNG("Assets/TFI_LUTCreator/LUT_Layer.png");
+    }
+
+    private Texture2D LoadPNG(string path)
+    {
+        byte[] bytes = System.IO.File.ReadAllBytes(path);
+
+        Texture2D tex = new Texture2D(2, 2);
+        tex.LoadImage(bytes);
+        
+        return tex; 
     }
 
     private void OnDisable()
@@ -280,8 +294,10 @@ public class TFI_LUTCreator : EditorWindow
 
         GUILayout.Space(20);
 
+        EditorGUI.DrawPreviewTexture(new Rect(50,GUILayoutUtility.GetLastRect().height + GUILayoutUtility.GetLastRect().y, (int)(_layerFigure.width * 0.5), (int)(_layerFigure.height* 0.5)), _layerFigure);        
 
-        GUILayout.Space(20);
+
+        GUILayout.Space(_layerFigure.height * 0.5f + 50);
         EditorGUILayout.EndScrollView();
 
         if(_lutCaptureMaterial != null){
